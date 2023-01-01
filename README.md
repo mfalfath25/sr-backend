@@ -1,37 +1,41 @@
-# Node, Express Server, and ES6 using babel.
-
 # Overview
-React uses JSX syntax. Babel is a transpiler i.e. it converts the JSX to vanilla JavaScript. You can view babel as an intermediate step between your code and "executable" code.
 
-React also uses ES6, which is not supported by most of the browsers. Babel converts the ES6 code to a code which is compatible with the browsers.
+Speed Reader PWA Backend (Mongo + Express + Node) using ES6
 
- REST APIs in Node.js using ES6 and Express with Code Coverage and JWT Authentication.
+# Stack
 
-# Features
- * babel v7
- * Express
- * bcrypt
- * jsonwebtoken
- * mongoose
- 
-# Requirements
- * node v13
- * mongodb compass
- 
+- babel v7
+- Express
+- bcrypt
+- jsonwebtoken
+- mongoose
+
 # Installation
- * `git clone https://github.com/kantivekariya/express-mongoose-es6-rest-api.git`
- * `cd express-mongoose-es6-rest-api`
- * `npm install`
- * `npm run dev` Rus as Development
 
-# GET Routes
+- `git clone git@github.com:mfalfath25/sr-backend.git`
+- `cd sr-backend`
+- `npm install`
+- `npm run dev` Rus as Development
+
+# Routes
+
 `http://localhost:8080/api/v1/auth/`
-* post `register` 
-* post `login`
-* get `users`
-* get `users/1`
-* put `users/1`
-* delete `users/1`
 
-# More Details visit following blogs.
-https://www.linkedin.com/pulse/building-es6-crud-api-nodejs-expressjs-babel-kanti-vekariya
+- post `register`
+- post `login`
+- get `users`
+- get `users/:userId`
+- put `users/:userId`
+- delete `users/:userId`
+
+`http://localhost:8080/api/v1/setting/`
+
+- get `setting/:userId`
+- put `setting/:userId`
+
+`http://localhost:8080/api/v1/training/`
+
+- get `all`
+- get `user/:userId`
+- post `add/:userId`
+- delete `delete/:trainingId`

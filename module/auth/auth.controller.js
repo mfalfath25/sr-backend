@@ -1,121 +1,149 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { UserModel } from "./auth.model";
-import httpStatus from "../../utils/httpStatus";
-import appConfig from "../../config/env";
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { UserModel } from './auth.model'
+import httpStatus from '../../utils/httpStatus'
+import appConfig from '../../config/env'
 
-const userController = {};
+const userController = {}
 
 // Create User
 userController.register = async (req, res, next) => {
   try {
-    const isExistingUser = await UserModel.findOne({ email: req.body.email });
+    const isExistingUser = await UserModel.findOne({ email: req.body.email })
     if (isExistingUser) {
       return res.status(httpStatus.CONFLICT).json({
-        message: "Mail Already Exists!",
-      });
+        status: 'ERROR',
+        message: 'Email sudah terdaftar!',
+      })
     } else {
-      const user = new UserModel(req.body);
+      const user = new UserModel(req.body)
       if (req.body.password) {
-        user.hash = await bcrypt.hashSync(req.body.password, 10);
+        user.hash = await bcrypt.hashSync(req.body.password, 10)
       }
-      user.password = user.hash;
-      await user.save();
-      return res.status(httpStatus.CREATED).json({ data: { user } });
+      user.password = user.hash
+      user.setting = {} // initialize setting object with default values
+      await user.save()
+      return res.status(httpStatus.CREATED).json({
+        status: 'OK',
+        message: 'Registrasi berhasil',
+        data: user,
+      })
     }
-  } catch (e) {
+  } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: "ERROR",
-      message: e.message,
-    });
+      status: 'ERROR',
+      message: 'Registrasi gagal',
+      error: error.toString(),
+    })
   }
-};
+}
 
 // Login user
 userController.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    const user = await UserModel.findOne({ email: email });
+    const { email, password } = req.body
+    const user = await UserModel.findOne({ email: email })
+    if (!user) {
+      return res.status(httpStatus.UNAUTHORIZED).json({
+        status: 'ERROR',
+        message: 'User tidak ditemukan',
+      })
+    }
     if (user && bcrypt.compareSync(password, user.password)) {
       const token = jwt.sign({ sub: user.id }, appConfig.jwt_key, {
-        expiresIn: "7d",
-      });
+        expiresIn: '7d',
+      })
       return res.status(httpStatus.OK).json({
-        message: "Auth successful",
+        status: 'OK',
+        message: 'Login berhasil',
+        userId: user._id,
         token: token,
-      });
+      })
     } else {
       return res.status(httpStatus.UNAUTHORIZED).json({
-        message: "Auth failed!",
-      });
+        status: 'ERROR',
+        message: 'Login gagal',
+      })
     }
-  } catch (e) {
+  } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-      status: "ERROR",
-      message: e.message,
-    });
+      status: 'ERROR',
+      message: 'Login gagal',
+      error: error.toString(),
+    })
   }
-};
+}
 
 // Get All Users
 userController.findAll = async (req, res) => {
   try {
-    let users = await UserModel.find();
-    return res.json(users);
+    const users = await UserModel.find()
+    return res.json({
+      status: 'OK',
+      data: users,
+    })
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ error: error.toString() });
+      .json({ status: 'ERROR', error: error.toString() })
   }
-};
+}
 
-// Get User By ID
+// Get User by ID
 userController.findOne = async (req, res) => {
   try {
-    let user = await UserModel.findById(req.params.userId);
+    let user = await UserModel.findById(req.params.userId).populate('trainings')
     if (!user) {
-      return res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ message: "User not found" });
+      return res.status(httpStatus.BAD_REQUEST).json({
+        status: 'ERROR',
+        message: 'User tidak ditemukan',
+      })
     }
-    return res.json(user);
+    return res.json({
+      status: 'OK',
+      data: user,
+    })
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ error: error.toString() });
+      .json({ status: 'ERROR', error: error.toString() })
   }
-};
+}
 
-// Update User By ID
+// Update User by ID
 userController.update = async (req, res) => {
   try {
-    let user = await UserModel.findById(req.params.userId);
+    let user = await UserModel.findById(req.params.userId)
     if (!user) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "User not found" });
+        .json({ status: 'ERROR', message: 'User tidak ditemukan' })
     }
-    Object.assign(user, req.body);
-    await user.save();
-    return res.json(user);
+    Object.assign(user, req.body)
+    await user.save()
+    return res.json({
+      status: 'OK',
+      message: 'Data berhasil diperbarui',
+      data: user,
+    })
   } catch (error) {
-    return res.status(500).json({ error: error.toString() });
+    return res.status(500).json({ status: 'ERROR', error: error.toString() })
   }
-};
+}
 
-// Delete User By ID
+// Delete User by ID
 userController.delete = async (req, res) => {
   try {
-    let user = await UserModel.findByIdAndRemove(req.params.userId);
+    let user = await UserModel.findByIdAndRemove(req.params.userId)
     if (!user) {
       return res
         .status(httpStatus.BAD_REQUEST)
-        .json({ message: "User not found" });
+        .json({ status: 'ERROR', message: 'User tidak ditemukan' })
     }
-    return res.json({ message: "User deleted successfully!" });
+    return res.json({ status: 'OK', message: 'User berhasil dihapus' })
   } catch (error) {
-    return res.status(500).json({ error: error.toString() });
+    return res.status(500).json({ status: 'ERROR', error: error.toString() })
   }
-};
+}
 
-export default userController;
+export default userController

@@ -1,17 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
+import { settingSchema } from '../setting/setting.model'
 
-const schema = mongoose.Schema;
+const schema = mongoose.Schema
 
 const userSchema = new schema({
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  address: {
+  username: {
     type: String,
     required: true,
   },
@@ -19,19 +12,18 @@ const userSchema = new schema({
     type: String,
     required: true,
   },
-  country: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: Number,
-    required: true,
-  },
   password: {
     type: String,
     required: true,
   },
-});
+  setting: settingSchema,
+  trainings: [
+    {
+      type: mongoose.ObjectId,
+      ref: 'training',
+    },
+  ],
+})
 
-const UserModel = mongoose.model("user", userSchema);
-export { UserModel };
+const UserModel = mongoose.model('user', userSchema)
+export { UserModel }
