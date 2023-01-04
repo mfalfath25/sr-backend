@@ -19,7 +19,7 @@ Speed Reader PWA Backend (Mongo + Express + Node) using ES6
 
 # Routes
 
-`http://localhost:8080/api/v1/auth/`
+`http://localhost:8000/api/v1/auth/`
 
 - post `register`
 - post `login`
@@ -28,12 +28,12 @@ Speed Reader PWA Backend (Mongo + Express + Node) using ES6
 - put `users/:userId`
 - delete `users/:userId`
 
-`http://localhost:8080/api/v1/setting/`
+`http://localhost:8000/api/v1/setting/`
 
 - get `setting/:userId`
 - put `setting/:userId`
 
-`http://localhost:8080/api/v1/training/`
+`http://localhost:8000/api/v1/training/`
 
 - get `all`
 - get `user/:userId`
