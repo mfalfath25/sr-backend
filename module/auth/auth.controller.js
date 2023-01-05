@@ -59,6 +59,8 @@ userController.login = async (req, res, next) => {
         userId: user._id,
         username: user.username,
         email: user.email,
+        trainings: user.trainings,
+        setting: user.setting,
         token: token,
       })
     } else {
